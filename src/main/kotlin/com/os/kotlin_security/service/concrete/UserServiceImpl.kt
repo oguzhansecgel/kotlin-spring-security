@@ -15,8 +15,9 @@ class UserServiceImpl (
            userRepository.save(it)
        }
     }
-
-    override fun loadUserByUsername(username: String?): UserDetails {
-        TODO("Not yet implemented")
+    override fun loadUserByUsername(username: String?): UserDetails? {
+        return userRepository.findByEmail(username)
+            .orElseThrow { RuntimeException("User not found with email or password") }
     }
+
 }

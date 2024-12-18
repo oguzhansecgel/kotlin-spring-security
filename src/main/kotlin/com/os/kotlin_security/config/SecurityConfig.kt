@@ -14,23 +14,24 @@ import org.springframework.security.web.SecurityFilterChain
 
 
 @Configuration
-internal class SecurityConfig {
-    private val userService: UserService? = null
-    private val passwordEncoder: PasswordEncoder? = null
-    private val baseSecurityService: BaseSecurityService? = null
-
+internal class SecurityConfig(
+    private val userService: UserService,
+    private val passwordEncoder: PasswordEncoder,
+    private val baseSecurityService: BaseSecurityService
+) {
 
     @Bean
     @Throws(Exception::class)
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
-        baseSecurityService!!.configureCommonSecurityRules(http)
+        baseSecurityService.configureCommonSecurityRules(http)
         http
             .authorizeHttpRequests  { authorizeRequests ->
                 authorizeRequests
                     .anyRequest().permitAll()
-            }
+            }// Ensure all other requests require authentication
         return http.build()
     }
+
     @Bean
     fun authenticationProvider(): AuthenticationProvider {
         val daoAuthenticationProvider = DaoAuthenticationProvider()
@@ -48,7 +49,7 @@ internal class SecurityConfig {
     companion object {
         private val WHITE_LIST = arrayOf(
             "/api/auth/**",
-
-            )
+            // Add other paths that should be publicly accessible
+        )
     }
 }
